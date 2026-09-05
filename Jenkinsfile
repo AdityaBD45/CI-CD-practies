@@ -23,7 +23,18 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t node-cicd-demo:jenkins .'
+                bat 'docker build -t adityabd/node-cicd-demo:latest .'
+            }
+        }
+
+        stage('Docker Push') {
+            environment {
+                DOCKER_CREDS = credentials('dockerhub-creds')
+            }
+
+            steps {
+                bat 'docker login -u "%DOCKER_CREDS_USR%" -p "%DOCKER_CREDS_PSW%"'
+                bat 'docker push adityabd/node-cicd-demo:latest'
             }
         }
     }
