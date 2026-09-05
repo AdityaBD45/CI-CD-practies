@@ -20,5 +20,11 @@ pipeline {
                 bat 'npm test'
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t node-cicd-demo:jenkins .'
+            }
+        }
     }
 }
