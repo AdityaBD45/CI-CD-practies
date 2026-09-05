@@ -37,5 +37,11 @@ pipeline {
                 bat 'docker push adityabd/node-cicd-demo:latest'
             }
         }
+
+        stage('Kubernetes Check') {
+            steps {
+                bat 'kubectl get nodes'
+            }
+        }
     }
 }
