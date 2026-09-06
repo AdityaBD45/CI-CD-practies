@@ -40,7 +40,9 @@ pipeline {
 
         stage('Kubernetes Check') {
             steps {
-                bat 'kubectl get nodes'
+                withKubeConfig([credentialsId: 'minikube-kubeconfig']) {
+                    bat 'kubectl get nodes'
+                }
             }
         }
     }
