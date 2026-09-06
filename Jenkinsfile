@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+    githubPush()
+}
+
     environment {
         IMAGE = "adityabd/node-cicd-demo:${BUILD_NUMBER}"
     }
