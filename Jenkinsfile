@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE = "adityabd/node-cicd-demo:${BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -23,7 +27,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t adityabd/node-cicd-demo:latest .'
+                bat 'docker build -t %IMAGE% .'
             }
         }
 
@@ -34,18 +38,19 @@ pipeline {
 
             steps {
                 bat 'docker login -u "%DOCKER_CREDS_USR%" -p "%DOCKER_CREDS_PSW%"'
-                bat 'docker push adityabd/node-cicd-demo:latest'
+                bat 'docker push %IMAGE%'
             }
         }
 
-        stage('Kubernetes Check') {
-    environment {
-        KUBECONFIG_FILE = credentials('minikube-kubeconfig')
-    }
+        stage('Deploy to Kubernetes') {
+            environment {
+                KUBECONFIG_FILE = credentials('minikube-kubeconfig')
+            }
 
-    steps {
-        bat 'kubectl --kubeconfig="%KUBECONFIG_FILE%" get nodes'
-    }
-}
+            steps {
+                bat 'kubectl --kubeconfig="%KUBECONFIG_FILE%" set image deployment/node-cicd-demo node-cicd-demo=%IMAGE%'
+                bat 'kubectl --kubeconfig="%KUBECONFIG_FILE%" rollout status deployment/node-cicd-demo'
+            }
+        }
     }
 }
