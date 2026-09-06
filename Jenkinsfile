@@ -39,11 +39,13 @@ pipeline {
         }
 
         stage('Kubernetes Check') {
-            steps {
-                withKubeConfig([credentialsId: 'minikube-kubeconfig']) {
-                    bat 'kubectl get nodes'
-                }
-            }
-        }
+    environment {
+        KUBECONFIG_FILE = credentials('minikube-kubeconfig')
+    }
+
+    steps {
+        bat 'kubectl --kubeconfig="%KUBECONFIG_FILE%" get nodes'
+    }
+}
     }
 }
